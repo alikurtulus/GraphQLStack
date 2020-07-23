@@ -1,7 +1,8 @@
-const graphql = require('graphql')                            // import graphql module.
-const { argsToArgsConfig } = require('graphql/type/definition')
+const graphql = require('graphql')
+const _ = require('lodash')                                       // import graphql module.
 const {GraphQLObjectType, GraphQLString, GraphQLSchema} = graphql            // We did some destructuring 
-const BookType = new GraphQLObjectType({                      // We defined BookType with graphql and name and fields .
+
+const BookType = new GraphQLObjectType({                                    // We defined BookType with graphql and name and fields .
     name:'Book',
     fields:() => ({
         id: {type: GraphQLString},
@@ -10,22 +11,29 @@ const BookType = new GraphQLObjectType({                      // We defined Book
     })
 })
 
+
+// dummy data 
+const books = [
+    {name:'Name of the Wind', genre:'Fantasy',id:'1'},
+    {name:'The Final Empire', genre:'Fantasy', id:'2'},
+    {name:"The Long Earth", genre:"Sci-Fi",id:"3"},
+]
 const RootQuery = new GraphQLObjectType({
-    name:'RootQueryType',
+    name: 'RootQueryType',
     fields:{
-        book:{
+        book: {
             type: BookType,
-            args:{id:{type:GraphQLString}}
+            args:{
+               id: {type: GraphQLString}
+            },
+            resolve(parentValue, args){ 
+                // move the resolve function to here
+                return _.find(books, {id: args.id});
+            }
         },
-        resolve(parents, args){
-            //code to get data from db/ other source
-            
 
-            
-        }
     }
-})
-
+});
 module.exports = new GraphQLSchema({
     query:RootQuery
 })
